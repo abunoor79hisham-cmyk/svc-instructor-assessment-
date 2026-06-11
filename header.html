@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بوابة رصد الأداء التدريسي الفني والمهني</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          screens: {
+            'xs': '475px',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+  </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-950 transition-colors duration-200">
+
+  <div id="app"></div>
+
+  <script>
+    // ======================== State ========================
+    const state = {
+      logoUrl: '', // set a url to show an image
+      institutionName: 'الكلية المهنية بالسيب',
+      currentUser: {
+        name: 'م.م. أحمد جاسم',
+        departmentId: 'dept1',
+      },
+      departments: [
+        { id: 'dept1', name: 'قسم تقنيات المعلومات' },
+        { id: 'dept2', name: 'قسم تقنيات الميكانيك' },
+        { id: 'dept3', name: 'قسم تقنيات الكهرباء' },
+      ],
+      currentRole: 'admin', // 'admin' | 'head' | 'trainer'
+    };
+
+    const tabs = [
+      { id: 'dashboard', label: 'لوحة التحكم والإحصائيات', icon: 'LayoutDashboard' },
+      { id: 'trainers', label: 'دليل المدربين والأساتذة', icon: 'Users' },
+      { id: 'form', label: 'استمارة تقييم أداء جديد', icon: 'FileEdit' },
+      { id: 'history', label: 'سجلات وأرشيف التقييم', icon: 'History' },
+      { id: 'settings', label: 'إعدادات المنظومة', icon: 'Settings', adminOnly: true },
+    ];
+
+    let currentTab = 'dashboard';
+    let darkMode = false;
+
+    // ======================== Render ========================
+    function render() {
+      const app = document.getElementById('app');
+
+      const getDeptNameAr = (deptId) => {
+        return state.departments.find(d => d.id === deptId)?.name || '';
+      };
+
+      app.innerHTML = `
+        <header class="no-print bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40 transition-colors duration-200">
+          <div class="max-w-7xl mx-auto px-4 md:px-6">
+
+            <!-- Top bar -->
+            <div class="flex items-center justify-between h-16 md:h-18">
+
+              <!-- Institution Crest Name -->
+              <div class="flex items-center gap-3 flex-row-reverse text-right">
+                ${state.logoUrl ? `
+                  <img src="${state.logoUrl}" alt="شعار" class="w-10 h-10 object-contain rounded" referrerPolicy="no-referrer" />
+                ` : `
+                  <div class="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center font-bold shadow-md hover:shadow-blue-500/10 transition-shadow">
+                    <i data-lucide="School" class="w-6 h-6"></i>
+                  </div>
+                `}
+                <div>
+                  <span class="block font-sans font-black text-xs md:text-sm text-slate-800 dark:text-slate-100 uppercase tracking-tight line-clamp-1">
+                    ${state.institutionName}
+                  </span>
+                  <span class="block text-[9px] text-blue-600 dark:text-blue-400 font-bold font-sans">
+                    بوابة رصد الأداء التدريسي الفني والمهني
+                  </span>
+                </div>
+              </div>
+
+              <!-- Quick Actions -->
+              <div class="flex items-center gap-3">
+
+                <!-- Dark Mode Switch -->
+                <button id="darkModeBtn"
+                  class="p-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-xl transition-all cursor-pointer border border-slate-100 dark:border-slate-800"
+                  title="تغيير مظهر الصفحة"
+                >
+                  <i data-lucide="${darkMode ? 'Sun' : 'Moon'}" class="w-4 h-4"></i>
+                </button>
+
+                <!-- Profile & Logout -->
+                ${state.currentUser ? `
+                  <div class="flex items-center gap-3 px-3.5 py-1.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-150 dark:border-slate-800 rounded-xl max-w-xs select-none flex-row-reverse">
+                    <div class="text-right hidden sm:block">
+                      <span class="block text-[11px] font-black text-slate-800 dark:text-slate-100 leading-tight">
+                        ${state.currentUser.name}
+                      </span>
+                      <span class="block text-[9px] font-bold text-emerald-600 dark:text-emerald-400 leading-tight mt-0.5">
+                        رئيس ${getDeptNameAr(state.currentUser.departmentId)}
+                      </span>
+                    </div>
+                    <div class="p-1.5 bg-emerald-50 dark:bg-emerald-950/40 rounded-lg text-emerald-600 dark:text-emerald-400">
+                      <i data-lucide="User" class="w-4 h-4"></i>
+                    </div>
+                    <button id="logoutBtn"
+                      class="mr-1 p-1.5 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/20 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-450 rounded-lg transition-colors cursor-pointer flex items-center gap-1"
+                      title="تسجيل الخروج"
+                    >
+                      <i data-lucide="LogOut" class="w-3.5 h-3.5"></i>
+                      <span class="text-[9.5px] font-bold hidden xs:inline">خروج</span>
+                    </button>
+                  </div>
+                ` : ''}
+
+              </div>
+
+            </div>
+
+            <!-- Tab switcher bar -->
+            <div class="flex border-t border-slate-150 dark:border-slate-800/80 gap-1 overflow-x-auto py-2 bg-white dark:bg-slate-900 duration-200">
+              ${tabs.map(tab => {
+                const isSettingsAndNotAdmin = tab.adminOnly && state.currentRole !== 'admin';
+                if (isSettingsAndNotAdmin) return '';
+
+                const isActive = currentTab === tab.id;
+
+                return `
+                  <button data-tab="${tab.id}"
+                    class="tab-btn px-5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition-all cursor-pointer ${
+                      isActive
+                        ? 'bg-blue-600 text-white shadow-sm font-extrabold'
+                        : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/50'
+                    }"
+                  >
+                    <i data-lucide="${tab.icon}" class="w-4 h-4"></i>
+                    <span>${tab.label}</span>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+
+          </div>
+        </header>
+
+        <!-- Demo content area -->
+        <main class="max-w-7xl mx-auto px-4 md:px-6 py-8">
+          <div class="bg-white dark:bg-slate-900 rounded-2xl p-8 text-center border border-slate-200 dark:border-slate-800">
+            <p class="text-slate-500 dark:text-slate-400 text-lg font-bold" id="tabLabel">
+              ${tabs.find(t => t.id === currentTab)?.label || ''}
+            </p>
+            <p class="text-slate-400 dark:text-slate-500 text-sm mt-2">محتوى التبويب يظهر هنا</p>
+          </div>
+        </main>
+      `;
+
+      lucide.createIcons();
+      bindEvents();
+    }
+
+    // ======================== Events ========================
+    function bindEvents() {
+      // Dark mode toggle
+      const darkBtn = document.getElementById('darkModeBtn');
+      if (darkBtn) {
+        darkBtn.addEventListener('click', () => {
+          darkMode = !darkMode;
+          if (darkMode) {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+          }
+          render();
+        });
+      }
+
+      // Logout
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+          if (confirm('تأكيد تسجيل الخروج؟')) {
+            alert('تم تسجيل الخروج');
+          }
+        });
+      }
+
+      // Tab clicks
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentTab = btn.dataset.tab;
+          render();
+        });
+      });
+    }
+
+    // ======================== Init theme ========================
+    (function initTheme() {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+        darkMode = true;
+      } else {
+        document.documentElement.classList.remove('dark');
+        darkMode = false;
+        if (!savedTheme) {
+          localStorage.setItem('theme', 'light');
+        }
+      }
+    })();
+
+    render();
+  </script>
+
+</body>
+</html>
