@@ -10,6 +10,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -82,17 +83,18 @@ const DIMS = [
     { id:'d2i4', text:'إعداد الخطط والتحاضير اليومية', order:4 },
   ]},
   { id:'dim3', title:'المحور الثالث: التقييم والتقويم', order:3, items:[
-    { id:'d3i1', text:'إعداد الاختبارات والواجبات المهنية', order:1 },
-    { id:'d3i2', text:'تصحيح وتقييم أداء المتدربين بدقة', order:2 },
-    { id:'d3i3', text:'تقديم تغذية راجعة بناءة للمتدربين', order:3 },
+    { id:'d3i1', text:'إعداد الاختبارات والأنشطة المنهجية', order:1 },
+    { id:'d3i2', text:'تصحيح وتقييم أداء المتدربين/ الطلبة بدقة', order:2 },
+    { id:'d3i3', text:'تقديم تغذية راجعة بناءة للمتدربين / الطلبة', order:3 },
   ]},
   { id:'dim4', title:'المحور الرابع: الإرشاد الأكاديمي والمهني', order:4, items:[
-    { id:'d4i1', text:'تقديم النصح والإرشاد الأكاديمي للمتدربين', order:1 },
-    { id:'d4i2', text:'المشاركة في الأنشطة الطلابية والفعاليات', order:2 },
+    { id:'d4i1', text:'تقديم النصح والإرشاد الأكاديمي للمتدربين / الطلبة', order:1 },
+    { id:'d4i2', text:'تقديم شرح واضح للبرنامج والمقررات التخصصية', order:2 },
+    { id:'d4i3', text:'المشاركة في الأنشطة الطلابية والفعاليات', order:3 },
   ]},
   { id:'dim5', title:'المحور الخامس: التطوير الذاتي والمهني', order:5, items:[
     { id:'d5i1', text:'المشاركة في برامج التطوير المهني', order:1 },
-    { id:'d5i2', text:'الإسهام في تطوير المناهج والمحتوى', order:2 },
+    { id:'d5i2', text:'الإسهام في تطوير المناهج والمقررات المنهجية', order:2 },
   ]},
 ];
 const HEADS = [
@@ -192,7 +194,7 @@ function renderDashboard() {
   var colors = ['from-blue-500 to-indigo-600','from-cyan-500 to-blue-600','from-purple-500 to-indigo-600','from-amber-500 to-orange-500','from-indigo-500 to-teal-500'];
 
   var html = '<div class="space-y-6 no-print">'+
-    '<div class="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-blue-950 text-white p-6 md:p-8 rounded-3xl border border-slate-800"><div class="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -mr-20 -mt-20"></div><div class="absolute bottom-0 left-0 w-48 h-48 bg-indigo-500/10 rounded-full blur-xl -ml-20 -mb-20"></div><div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6"><div class="space-y-2 text-right"><h1 class="text-2xl md:text-3xl font-black font-sans leading-tight">لوحة إحصائيات تقويم الأداء</h1><p class="text-slate-300 max-w-2xl text-xs sm:text-sm">مرحباً بك في لوحة تحكّم معايير الجودة والتقييم المهني.</p></div><div class="flex gap-3 flex-wrap"><button onclick="navTab(\'form\')" class="px-5 py-2.5 bg-blue-600 text-white font-extrabold hover:bg-blue-700 active:scale-95 transition-all text-xs rounded-xl shadow-md flex items-center gap-2 cursor-pointer"><i data-lucide="FileCheck" class="w-4 h-4"></i><span>تقييم مدرب جديد</span></button><button onclick="navTab(\'history\')" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 font-extrabold text-slate-200 active:scale-95 transition-all text-xs rounded-xl border border-slate-700 flex items-center gap-2 cursor-pointer"><i data-lucide="Users" class="w-4 h-4"></i><span>استعراض السجلات</span></button></div></div></div>';
+    '<div class="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-blue-950 text-white p-6 md:p-8 rounded-3xl border border-slate-800"><div class="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -mr-20 -mt-20"></div><div class="absolute bottom-0 left-0 w-48 h-48 bg-indigo-500/10 rounded-full blur-xl -ml-20 -mb-20"></div><div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6"><div class="space-y-2 text-right"><h1 class="text-2xl md:text-3xl font-black font-sans leading-tight">لوحة إحصائيات تقويم الأداء</h1><p class="text-slate-300 max-w-2xl text-xs sm:text-sm">مرحباً بك في لوحة تحكّم معايير الجودة والتقييم المهني.</p></div><div class="flex gap-3 flex-wrap"><button onclick="navTab(\'form\')" class="px-5 py-2.5 bg-blue-600 text-white font-extrabold hover:bg-blue-700 active:scale-95 transition-all text-xs rounded-xl shadow-md flex items-center gap-2 cursor-pointer"><i data-lucide="FileCheck" class="w-4 h-4"></i><span>تقييم مدرب جديد</span></button><button onclick="navTab(\'history\')" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 font-extrabold text-slate-200 active:scale-95 transition-all text-xs rounded-xl border border-slate-700 flex items-center gap-2 cursor-pointer"><i data-lucide="Users" class="w-4 h-4"></i><span>استعراض السجلات</span></button><button onclick="renderReport()" class="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-600 font-extrabold text-white active:scale-95 transition-all text-xs rounded-xl border border-emerald-600 flex items-center gap-2 cursor-pointer"><i data-lucide="BarChart3" class="w-4 h-4"></i><span>تقرير إحصائي</span></button></div></div></div>';
 
   if (pend.length > 0) {
     var pendHtml = ''; for (var i=0; i<pend.length; i++) { var t=pend[i]; var last = fEv.filter(function(e){ return e.trainerId===t.id; }).sort(function(a,b){ return new Date(b.evaluationDate)-new Date(a.evaluationDate); })[0]; pendHtml += '<div class="flex items-center justify-between p-3 bg-white/50 dark:bg-slate-900/45 rounded-2xl border border-amber-500/5"><div class="text-right"><span class="block font-black text-xs text-slate-800 dark:text-slate-100">'+t.name+'</span><span class="block text-[10px] text-slate-500">'+t.jobTitle+' · '+(last?'آخر تقييم: '+last.evaluationDate:'بانتظار التقويم الأول')+'</span></div><button onclick="preSelTr=\''+t.id+'\';navTab(\'form\')" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-extrabold rounded-xl text-[10px] cursor-pointer active:scale-95">بدء تقييم</button></div>'; }
@@ -213,6 +215,11 @@ function renderDashboard() {
     deptStats.map(function(d){ return '<div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 hover:border-blue-500/30 transition-all bento-card-interactive"><div><div class="flex justify-between items-start"><div class="text-right"><span class="px-2 py-0.5 bg-blue-100 dark:bg-blue-950/50 text-blue-800 dark:text-blue-400 rounded text-[9px] font-bold">'+(d.code||'DEPT')+'</span><h4 class="font-extrabold text-xs text-slate-800 dark:text-slate-200 mt-1.5">'+d.name+'</h4></div><div class="text-left"><span class="text-xl font-black text-slate-800 dark:text-slate-100">'+d.avg+'</span><span class="text-[10px] text-slate-400"> / 5.0</span></div></div><p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mt-2">'+(d.desc||'')+'</p></div><div class="mt-4 pt-3 border-t border-slate-200/50 dark:border-slate-800/60 space-y-3"><div class="flex justify-between text-xs text-slate-500"><span>نسبة الإنجاز:</span><span class="font-black text-blue-600 dark:text-blue-400">'+d.pct+'%</span></div><div class="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden"><div class="h-full bg-blue-600 dark:bg-blue-500 rounded-full" style="width:'+d.pct+'%"></div></div><div class="flex justify-between text-[9px] text-slate-400 pt-1"><span>المدربين: <strong class="text-slate-600 dark:text-slate-300 font-extrabold">'+d.trainerCount+'</strong></span><span>التقييمات: <strong class="text-slate-600 dark:text-slate-300 font-extrabold">'+d.evalCount+'</strong></span></div></div></div>'; }).join('')+
   '</div></div>';
 
+  // Charts section
+  html += '<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">'+
+    '<div class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs"><div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4"><div class="text-right border-r-4 border-purple-500 pr-3"><h3 class="text-base md:text-lg font-black text-slate-800 dark:text-slate-100">توزيع التوصيات</h3><p class="text-xs text-slate-500">تحليل دائري</p></div></div><div class="pt-4" style="height:250px"><canvas id="recChart"></canvas></div></div>'+
+    '<div class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs"><div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4"><div class="text-right border-r-4 border-cyan-500 pr-3"><h3 class="text-base md:text-lg font-black text-slate-800 dark:text-slate-100">متوسط الدرجات حسب القسم</h3><p class="text-xs text-slate-500">مخطط بياني</p></div></div><div class="pt-4" style="height:250px"><canvas id="deptChart"></canvas></div></div>'+
+  '</div>';
   // Recent evaluations
   html += '<div class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-6"><div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4"><div class="text-right border-r-4 border-sky-500 pr-3"><h3 class="text-base md:text-lg font-black text-slate-800 dark:text-slate-100">أحدث التقييمات</h3><p class="text-xs text-slate-500">الاستمارات الأخيرة</p></div><button onclick="navTab(\'history\')" class="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 font-extrabold flex items-center gap-1 cursor-pointer"><span>عرض الكل</span><i data-lucide="ChevronLeft" class="w-4 h-4"></i></button></div>';
   if (fEv.length > 0) {
@@ -230,7 +237,7 @@ function renderDashboard() {
 
 function renderTrainers() {
   var fTr = filtTr();
-  var html = '<div class="space-y-6"><div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4"><div class="space-y-1"><h2 class="text-xl font-bold text-slate-800 dark:text-slate-100">دليل المدربين</h2><p class="text-xs text-slate-500">إدارة الكادر التدريسي</p></div><div class="flex gap-2"><button onclick="addTrainerModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs cursor-pointer flex items-center gap-2"><i data-lucide="UserPlus" class="w-4 h-4"></i><span>إضافة مدرب</span></button><label class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs cursor-pointer flex items-center gap-2"><i data-lucide="Upload" class="w-4 h-4"></i><span>استيراد ملف</span><input type="file" id="importTrainerFile" accept=".txt,.csv,.xlsx,.xls,.pdf" class="hidden" onchange="importTrainersFile(this)"></label></div></div>';
+  var html = '<div class="space-y-6"><div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4"><div class="space-y-1"><h2 class="text-xl font-bold text-slate-800 dark:text-slate-100">دليل المدربين</h2><p class="text-xs text-slate-500">إدارة الكادر التدريسي</p></div><div class="flex gap-2"><button onclick="addTrainerModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs cursor-pointer flex items-center gap-2"><i data-lucide="UserPlus" class="w-4 h-4"></i><span>إضافة مدرب</span></button><button onclick="exportTrainersExcel()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs cursor-pointer flex items-center gap-2"><i data-lucide="FileSpreadsheet" class="w-4 h-4"></i><span>تصدير Excel</span></button><label class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs cursor-pointer flex items-center gap-2"><i data-lucide="Upload" class="w-4 h-4"></i><span>استيراد ملف</span><input type="file" id="importTrainerFile" accept=".txt,.csv,.xlsx,.xls,.pdf" class="hidden" onchange="importTrainersFile(this)"></label></div></div>';
   html += '<div id="importStatus" class="hidden"></div>';
   var deptOpts = '<option value="">جميع الأقسام</option>';
   filtDepts().forEach(function(d){ deptOpts += '<option value="'+d.id+'"'+(d.id===filterDeptId?' selected':'')+'>'+d.name+'</option>'; });
@@ -272,7 +279,7 @@ function renderForm() {
   }
   var recOpts = ''; for (var k in RECOMMENDATIONS_AR) { recOpts += '<option value="'+k+'">'+RECOMMENDATIONS_AR[k]+'</option>'; }
   return '<div class="space-y-8 no-print text-right"><div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4"><div><div class="flex items-center gap-2 justify-end"><span class="px-2.5 py-1 bg-emerald-100 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-400 rounded-lg text-[10px] font-bold">جودة التدريب</span><h1 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100">استمارة تقييم أداء مدرب</h1></div><p class="text-xs text-slate-500">نموذج موحد لتقييم الأداء</p></div><button onclick="navTab(\'dashboard\')" class="px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-800 text-xs font-bold rounded-xl cursor-pointer">إلغاء</button></div><form id="evalForm" class="space-y-8" novalidate>'+
-    '<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm space-y-6"><div class="border-b border-rose-100 dark:border-slate-800 pb-3 flex items-center gap-2"><i data-lucide="User" class="w-5 h-5 text-emerald-600"></i><h3 class="font-bold text-sm text-slate-800 dark:text-slate-100">بيانات المدرب والمسار</h3></div><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">'+
+    '<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm space-y-6"><div class="border-b border-rose-100 dark:border-slate-800 pb-3 flex items-center gap-2"><i data-lucide="User" class="w-5 h-5 text-emerald-600"></i><h3 class="font-bold text-sm text-slate-800 dark:text-slate-100">بيانات عامة</h3></div><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">'+
       '<div class="space-y-1"><label class="text-xs font-bold text-slate-600">المدرب <span class="text-rose-500">*</span></label><select id="fTrainer" required class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 rounded-lg text-xs border border-slate-200 focus:outline-none focus:border-emerald-500 text-right cursor-pointer"><option value="" disabled '+(selId?'':'selected')+'>اختر...</option>'+trOpts+'</select></div>'+
       '<div class="space-y-1"><label class="text-xs font-bold text-slate-500">الوظيفة</label><input id="fJob" disabled value="'+(ct?ct.jobTitle:'')+'" class="w-full px-3 py-2 bg-slate-100/80 dark:bg-slate-800/60 rounded-lg text-xs border border-slate-200 text-right font-semibold text-slate-500"></div>'+
       '<div class="space-y-1"><label class="text-xs font-bold text-slate-500">القسم</label><input disabled value="'+(cd?cd.name:'')+'" class="w-full px-3 py-2 bg-slate-100/80 dark:bg-slate-800/60 rounded-lg text-xs border border-slate-200 text-right font-semibold text-slate-500"></div>'+
@@ -284,31 +291,47 @@ function renderForm() {
     '<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm space-y-6"><div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center gap-2"><i data-lucide="MessageSquare" class="w-5 h-5 text-emerald-600"></i><h3 class="font-bold text-sm text-slate-800 dark:text-slate-100">التوصية والملاحظات</h3></div>'+
     '<div class="p-5 bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 rounded-xl flex flex-col md:flex-row justify-between items-center gap-4"><div class="text-right"><span class="text-xs text-slate-400">المجموع:</span><div class="flex items-baseline gap-2"><span class="text-2xl font-extrabold text-emerald-600" id="grandTotalDisplay">0</span><span class="text-xs text-slate-400">/ <span id="grandMaxDisplay">0</span> نسبة: <span id="grandPctDisplay" class="text-lg font-bold text-slate-700 dark:text-slate-300">100%</span></span></div></div><div class="w-full md:w-64"><select id="fRec" class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-xs text-right font-bold cursor-pointer text-emerald-800">'+recOpts+'</select></div></div>'+
     '<div><textarea id="fNotes" rows="4" placeholder="ملاحظات..." class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 rounded-lg text-xs border border-slate-200 focus:outline-none focus:border-emerald-500 text-right"></textarea></div></div>'+
-    '<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm space-y-6"><div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center gap-2"><i data-lucide="PenTool" class="w-5 h-5 text-emerald-600"></i><h3 class="font-bold text-sm text-slate-800 dark:text-slate-100">التوقيعات الرسمية</h3></div><div class="grid grid-cols-1 lg:grid-cols-2 gap-8 divide-y lg:divide-y-0 lg:divide-x lg:divide-x-reverse divide-slate-200 dark:divide-slate-800/80">'+
+    '<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm space-y-6"><div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center gap-2"><i data-lucide="PenTool" class="w-5 h-5 text-emerald-600"></i><h3 class="font-bold text-sm text-slate-800 dark:text-slate-100">التوقيع والاعتماد</h3></div><div class="grid grid-cols-1 lg:grid-cols-2 gap-8 divide-y lg:divide-y-0 lg:divide-x lg:divide-x-reverse divide-slate-200 dark:divide-slate-800/80">'+
     '<div class="space-y-4"><span class="inline-flex px-2.5 py-1 rounded bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 text-[10px] font-black">بند (1): المقيم</span>'+
     '<div class="space-y-4"><div><label class="text-xs font-bold text-slate-600">الاسم <span class="text-rose-500">*</span></label><input id="fAssName" required value="'+(state.currentUser?state.currentUser.name:'')+'" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/50 rounded-lg text-xs border border-slate-200 focus:outline-none focus:border-emerald-500 text-right font-semibold"></div>'+
     '<div><label class="text-xs font-bold text-slate-600">المسمى <span class="text-rose-500">*</span></label><input id="fAssTitle" required value="رئيس '+deptName(state.currentUser?state.currentUser.departmentId:'')+'" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/50 rounded-lg text-xs border border-slate-200 focus:outline-none focus:border-emerald-500 text-right"></div>'+
     '<div><label class="text-xs font-bold text-slate-600">التاريخ <span class="text-rose-500">*</span></label><input id="fDate" type="date" required value="'+today()+'" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/50 rounded-lg text-xs border border-slate-200 focus:outline-none focus:border-emerald-500"></div></div>'+
-    '<div class="space-y-3 pt-2"><div class="flex items-center justify-between"><label class="text-xs font-bold text-slate-600">التوقيع <span class="text-rose-500">*</span></label><button type="button" onclick="clearSign(\'ass\')" class="px-2 py-1 bg-slate-100 hover:bg-rose-50 text-[10px] font-bold text-slate-500 rounded-md cursor-pointer border">مسح</button></div><div class="border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 rounded-xl overflow-hidden relative"><canvas id="assSign" width="400" height="150" class="w-full h-[150px] block cursor-crosshair signature-canvas"></canvas><div class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center text-slate-400"><i data-lucide="PenTool" class="w-4 h-4"></i><span class="text-[10px]">وقع هنا (رئيس القسم)</span></div></div></div></div>'+
+    '<div class="space-y-3 pt-2"><div class="flex items-center justify-between"><label class="text-xs font-bold text-slate-600">التوقيع <span class="text-rose-500">*</span></label><div class="flex gap-2"><button type="button" onclick="document.getElementById(\'assUpload\').click()" class="px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 text-[10px] font-bold rounded-md cursor-pointer border"><i data-lucide="Upload" class="w-3 h-3 inline"></i> رفع</button><button type="button" onclick="clearSign(\'ass\')" class="px-2 py-1 bg-slate-100 hover:bg-rose-50 text-[10px] font-bold text-slate-500 rounded-md cursor-pointer border">مسح</button><input type="file" id="assUpload" accept="image/*" class="hidden" onchange="uploadSign(\'ass\',this)"></div></div><div class="border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 rounded-xl overflow-hidden relative"><canvas id="assSign" width="400" height="150" class="w-full h-[150px] block cursor-crosshair signature-canvas"></canvas><div class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center text-slate-400"><i data-lucide="PenTool" class="w-4 h-4"></i><span class="text-[10px]">وقع هنا (رئيس القسم)</span></div></div></div></div>'+
     '<div class="space-y-4 pt-6 lg:pt-0 lg:pr-8"><span class="inline-flex px-2.5 py-1 rounded bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 text-[10px] font-black">بند (2): المدرب</span>'+
     '<div><label class="text-xs font-bold text-slate-500">اسم المدرب</label><input id="fTrName" disabled value="'+(ct?ct.name:'')+'" class="w-full px-3 py-2 bg-slate-100/85 dark:bg-slate-800/50 rounded-lg text-xs border border-slate-200 text-right font-black text-slate-600 dark:text-slate-300"></div>'+
     '<div class="p-3 bg-emerald-500/5 border border-emerald-500/10 rounded-xl text-[10px] text-slate-500">توقيع المدرب يمثل إقراراً بالاطلاع على التقييم.</div>'+
-    '<div class="space-y-3 pt-2"><div class="flex items-center justify-between"><label class="text-xs font-bold text-slate-600">توقيع المدرب <span class="text-slate-400 font-normal">(اختياري)</span></label><button type="button" onclick="clearSign(\'tr\')" class="px-2 py-1 bg-slate-100 hover:bg-rose-50 text-[10px] font-bold text-slate-500 rounded-md cursor-pointer border">مسح</button></div><div class="border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 rounded-xl overflow-hidden relative"><canvas id="trSign" width="400" height="150" class="w-full h-[150px] block cursor-crosshair signature-canvas"></canvas><div class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center text-slate-400"><i data-lucide="PenTool" class="w-4 h-4"></i><span class="text-[10px]">وقع هنا (المدرب)</span></div></div></div></div>'+
+    '<div class="space-y-3 pt-2"><div class="flex items-center justify-between"><label class="text-xs font-bold text-slate-600">توقيع المدرب <span class="text-slate-400 font-normal">(اختياري)</span></label><div class="flex gap-2"><button type="button" onclick="document.getElementById(\'trUpload\').click()" class="px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 text-[10px] font-bold rounded-md cursor-pointer border"><i data-lucide="Upload" class="w-3 h-3 inline"></i> رفع</button><button type="button" onclick="clearSign(\'tr\')" class="px-2 py-1 bg-slate-100 hover:bg-rose-50 text-[10px] font-bold text-slate-500 rounded-md cursor-pointer border">مسح</button><input type="file" id="trUpload" accept="image/*" class="hidden" onchange="uploadSign(\'tr\',this)"></div></div><div class="border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 rounded-xl overflow-hidden relative"><canvas id="trSign" width="400" height="150" class="w-full h-[150px] block cursor-crosshair signature-canvas"></canvas><div class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center text-slate-400"><i data-lucide="PenTool" class="w-4 h-4"></i><span class="text-[10px]">وقع هنا (المدرب)</span></div></div></div></div>'+
     '</div></div>'+
     '<div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-800"><button type="button" onclick="navTab(\'dashboard\')" class="px-5 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 border border-slate-200 font-bold rounded-xl text-xs cursor-pointer">إلغاء</button><button type="submit" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl text-xs flex items-center gap-2 cursor-pointer shadow-md active:scale-95"><i data-lucide="Save" class="w-4 h-4"></i><span>حفظ واعتماد التقييم</span></button></div>'+
   '</form></div>';
 }
 function renderHistory() {
   var fEv = filtEvals();
-  var html = '<div class="space-y-6"><div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4"><div class="space-y-1"><h2 class="text-xl font-bold text-slate-800 dark:text-slate-100">سجلات التقييم</h2><p class="text-xs text-slate-500">جميع الاستمارات المخزنة</p></div><button onclick="navTab(\'form\')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs cursor-pointer flex items-center gap-2"><i data-lucide="FileEdit" class="w-4 h-4"></i><span>تقييم جديد</span></button></div>';
-  if (fEv.length > 0) {
+  var html = '<div class="space-y-6"><div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4"><div class="space-y-1"><h2 class="text-xl font-bold text-slate-800 dark:text-slate-100">سجلات التقييم</h2><p class="text-xs text-slate-500">جميع الاستمارات المخزنة</p></div><div class="flex gap-2"><button onclick="exportEvalsExcel()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-[10px] cursor-pointer flex items-center gap-1.5"><i data-lucide="FileSpreadsheet" class="w-3.5 h-3.5"></i><span>تصدير Excel</span></button><button onclick="navTab(\'form\')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs cursor-pointer flex items-center gap-2"><i data-lucide="FileEdit" class="w-4 h-4"></i><span>تقييم جديد</span></button></div></div>';
+  var searchHtml = '<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row gap-3 items-center"><div class="relative flex-1 w-full"><i data-lucide="Search" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"></i><input id="histSearch" type="text" placeholder="بحث باسم المدرب أو المادة..." class="w-full pr-10 pl-3 py-2 bg-slate-50 dark:bg-slate-800 rounded-lg text-xs border border-slate-200 focus:outline-none focus:border-blue-500 text-right"></div><select id="histDeptFilter" class="w-full sm:w-48 px-3 py-2 bg-slate-50 dark:bg-slate-800 rounded-lg text-xs border border-slate-200 focus:outline-none focus:border-blue-500 text-right cursor-pointer"><option value="">جميع الأقسام</option>';
+  state.departments.forEach(function(d){ searchHtml += '<option value="'+d.id+'">'+d.name+'</option>'; });
+  searchHtml += '</select><select id="histRecFilter" class="w-full sm:w-40 px-3 py-2 bg-slate-50 dark:bg-slate-800 rounded-lg text-xs border border-slate-200 focus:outline-none focus:border-blue-500 text-right cursor-pointer"><option value="">جميع التوصيات</option>';
+  for (var rk in RECOMMENDATIONS_AR) searchHtml += '<option value="'+rk+'">'+RECOMMENDATIONS_AR[rk]+'</option>';
+  searchHtml += '</select></div>';
+  html += searchHtml;
+  var filtered = fEv.filter(function(ev){
+    var q = (document.getElementById('histSearch')||{}).value||'';
+    var dep = (document.getElementById('histDeptFilter')||{}).value||'';
+    var rec = (document.getElementById('histRecFilter')||{}).value||'';
+    if (q) { var lq = q.toLowerCase(); if (ev.trainerName.toLowerCase().indexOf(lq)<0 && ev.courseName.toLowerCase().indexOf(lq)<0) return false; }
+    if (dep && ev.departmentId !== dep) return false;
+    if (rec && ev.finalRecommendation !== rec) return false;
+    return true;
+  });
+  html += '<div id="histCount" class="text-xs text-slate-500 text-right">عدد النتائج: '+filtered.length+'</div>';
+  if (filtered.length > 0) {
     html += '<div class="hidden md:block bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden"><table class="w-full text-right text-xs"><thead><tr class="bg-slate-50 dark:bg-slate-800/55 text-slate-500 border-b border-slate-200 dark:border-slate-800"><th class="p-4 font-bold">المدرب</th><th class="p-4 font-bold">القسم</th><th class="p-4 font-bold">المادة</th><th class="p-4 font-bold">الفصل</th><th class="p-4 font-bold">التاريخ</th><th class="p-4 font-bold text-center">المعدل</th><th class="p-4 font-bold text-center">التوصية</th><th class="p-4 font-bold text-left">الإجراءات</th></tr></thead><tbody class="divide-y divide-slate-100/50 dark:divide-slate-800/60">'+
-      fEv.map(function(ev){ var tt=0,cc=0; Object.values(ev.ratings).forEach(function(s){tt+=s;cc+=5;}); var pc=cc>0?Math.round((tt/cc)*100):0; var r=cc>0?(tt/(cc/5)).toFixed(1):'0'; return '<tr class="hover:bg-slate-50/50"><td class="p-4"><span class="font-extrabold block">'+ev.trainerName+'</span><span class="text-[10px] text-slate-400">'+ev.trainerJobTitle+'</span></td><td class="p-4 text-slate-600">'+ev.departmentName+'</td><td class="p-4">'+ev.courseName+'</td><td class="p-4 text-slate-500">'+ev.semester+'</td><td class="p-4 text-slate-500 font-mono">'+ev.evaluationDate+'</td><td class="p-4 text-center"><span class="font-black font-mono">'+r+'</span><span class="text-[10px] text-slate-400"> / 5.0</span><br><span class="text-[10px] text-blue-600 font-bold">('+pc+'%)</span></td><td class="p-4 text-center"><span class="inline-flex px-2.5 py-1 text-[10px] font-bold rounded-lg border '+window['REC_COLORS'][ev.finalRecommendation]+'">'+window['RECOMMENDATIONS_AR'][ev.finalRecommendation]+'</span></td><td class="p-4 text-left"><button onclick="openDetail(\''+ev.id+'\')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-[10px] cursor-pointer">عرض PDF</button> <button onclick="delEval(\''+ev.id+'\')" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-[10px] cursor-pointer"><i data-lucide="Trash" class="w-3 h-3 inline"></i></button></td></tr>'; }).join('')+
+      filtered.map(function(ev){ var tt=0,cc=0; Object.values(ev.ratings).forEach(function(s){tt+=s;cc+=5;}); var pc=cc>0?Math.round((tt/cc)*100):0; var r=cc>0?(tt/(cc/5)).toFixed(1):'0'; return '<tr class="hover:bg-slate-50/50"><td class="p-4"><span class="font-extrabold block">'+ev.trainerName+'</span><span class="text-[10px] text-slate-400">'+ev.trainerJobTitle+'</span></td><td class="p-4 text-slate-600">'+ev.departmentName+'</td><td class="p-4">'+ev.courseName+'</td><td class="p-4 text-slate-500">'+ev.semester+'</td><td class="p-4 text-slate-500 font-mono">'+ev.evaluationDate+'</td><td class="p-4 text-center"><span class="font-black font-mono">'+r+'</span><span class="text-[10px] text-slate-400"> / 5.0</span><br><span class="text-[10px] text-blue-600 font-bold">('+pc+'%)</span></td><td class="p-4 text-center"><span class="inline-flex px-2.5 py-1 text-[10px] font-bold rounded-lg border '+window['REC_COLORS'][ev.finalRecommendation]+'">'+window['RECOMMENDATIONS_AR'][ev.finalRecommendation]+'</span></td><td class="p-4 text-left"><button onclick="openDetail(\''+ev.id+'\')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-[10px] cursor-pointer">عرض PDF</button> <button onclick="delEval(\''+ev.id+'\')" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-[10px] cursor-pointer"><i data-lucide="Trash" class="w-3 h-3 inline"></i></button></td></tr>'; }).join('')+
     '</tbody></table></div><div class="md:hidden space-y-4">'+
-      fEv.map(function(ev){ var tt=0,cc=0; Object.values(ev.ratings).forEach(function(s){tt+=s;cc+=5;}); var pc=cc>0?Math.round((tt/cc)*100):0; var r=cc>0?(tt/(cc/5)).toFixed(1):'0'; return '<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm"><div class="flex justify-between items-start mb-3"><div><span class="font-extrabold block text-sm">'+ev.trainerName+'</span><span class="text-[11px] text-slate-400">'+ev.trainerJobTitle+'</span></div><span class="font-black font-mono text-sm">'+r+' <span class="text-[10px] text-slate-400">/ 5.0</span></span></div><div class="grid grid-cols-2 gap-2 text-[11px] text-slate-500 mb-3"><div>'+ev.departmentName+'</div><div>'+ev.courseName+'</div><div>'+ev.evaluationDate+'</div><div><span class="inline-flex px-2 py-0.5 text-[9px] font-bold rounded-md border '+window['REC_COLORS'][ev.finalRecommendation]+'">'+window['RECOMMENDATIONS_AR'][ev.finalRecommendation]+'</span></div></div><div class="flex gap-2"><button onclick="openDetail(\''+ev.id+'\')" class="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs cursor-pointer">عرض PDF</button><button onclick="delEval(\''+ev.id+'\')" class="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl cursor-pointer"><i data-lucide="Trash" class="w-4 h-4"></i></button></div></div>'; }).join('')+
+      filtered.map(function(ev){ var tt=0,cc=0; Object.values(ev.ratings).forEach(function(s){tt+=s;cc+=5;}); var pc=cc>0?Math.round((tt/cc)*100):0; var r=cc>0?(tt/(cc/5)).toFixed(1):'0'; return '<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm"><div class="flex justify-between items-start mb-3"><div><span class="font-extrabold block text-sm">'+ev.trainerName+'</span><span class="text-[11px] text-slate-400">'+ev.trainerJobTitle+'</span></div><span class="font-black font-mono text-sm">'+r+' <span class="text-[10px] text-slate-400">/ 5.0</span></span></div><div class="grid grid-cols-2 gap-2 text-[11px] text-slate-500 mb-3"><div>'+ev.departmentName+'</div><div>'+ev.courseName+'</div><div>'+ev.evaluationDate+'</div><div><span class="inline-flex px-2 py-0.5 text-[9px] font-bold rounded-md border '+window['REC_COLORS'][ev.finalRecommendation]+'">'+window['RECOMMENDATIONS_AR'][ev.finalRecommendation]+'</span></div></div><div class="flex gap-2"><button onclick="openDetail(\''+ev.id+'\')" class="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs cursor-pointer">عرض PDF</button><button onclick="delEval(\''+ev.id+'\')" class="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl cursor-pointer"><i data-lucide="Trash" class="w-4 h-4"></i></button></div></div>'; }).join('')+
     '</div>';
   } else {
-    html += '<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-12 text-center"><i data-lucide="History" class="w-12 h-12 mx-auto text-slate-300 mb-3"></i><p class="text-slate-500 text-sm font-bold">لا توجد تقييمات</p><button onclick="navTab(\'form\')" class="mt-4 px-5 py-2.5 bg-blue-600 text-white font-bold rounded-xl text-xs cursor-pointer">تقييم الآن</button></div>';
+    html += '<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-12 text-center"><i data-lucide="History" class="w-12 h-12 mx-auto text-slate-300 mb-3"></i><p class="text-slate-500 text-sm font-bold">لا توجد نتائج للبحث</p></div>';
   }
   return html + '</div>';
 }
@@ -408,7 +431,17 @@ function bindHeaderEvents() {
 
 function bindPageEvents() {
   if (activeTab === 'form') { bindFormEvents(); initSignCanvases(); }
-  if (activeTab === 'dashboard') { updateGrandTotals(); }
+  if (activeTab === 'dashboard') { updateGrandTotals(); initCharts(); }
+  if (activeTab === 'history') { bindHistoryFilters(); }
+}
+function bindHistoryFilters() {
+  var search = document.getElementById('histSearch');
+  var dept = document.getElementById('histDeptFilter');
+  var rec = document.getElementById('histRecFilter');
+  [search, dept, rec].forEach(function(el){
+    if (el) el.addEventListener('change', function(){ render(); });
+  });
+  if (search) search.addEventListener('input', function(){ render(); });
 }
 function updateGrandTotals() { /* no-op for now, computed inline */ }
 // ====================== FORM EVENTS ======================
@@ -477,6 +510,9 @@ function bindFormEvents() {
       };
       state.evaluations = [ev].concat(state.evaluations);
       saveState();
+      if (confirm('تم حفظ التقييم بنجاح.\nهل ترغب في إرسال إشعار عبر البريد الإلكتروني للمدرب؟')) {
+        notifyTrainerEmail(ev);
+      }
       selectedId = ev.id;
       activeTab = 'detail';
       render();
@@ -504,6 +540,25 @@ function initSignCanvases() {
     c.addEventListener('touchmove', drawMove, {passive:false});
     c.addEventListener('touchend', drawEnd);
   });
+}
+function uploadSign(id, input) {
+  var file = input.files[0]; if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = new Image();
+    img.onload = function() {
+      var c = document.getElementById(id+'Sign'); if (!c) return;
+      var ctx = c.getContext('2d'); if (!ctx) return;
+      ctx.clearRect(0, 0, c.width, c.height);
+      var scale = Math.min(c.width/img.width, c.height/img.height) * 0.85;
+      var x = (c.width - img.width*scale)/2, y = (c.height - img.height*scale)/2;
+      ctx.drawImage(img, x, y, img.width*scale, img.height*scale);
+      signEmpty[id] = false;
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
 }
 function clearSign(id) {
   var c = document.getElementById(id+'Sign'); if (!c) return;
@@ -667,6 +722,101 @@ function exportPDF() {
     if (btn) btn.textContent = 'حفظ كـ PDF';
   }).catch(function(err){ console.error(err); alert('خطأ في توليد PDF'); if (btn) btn.textContent = 'حفظ كـ PDF'; });
 }
+
+// ====================== FEATURE: CHARTS ======================
+var chartInstances = {};
+function initCharts() {
+  if (typeof Chart === 'undefined') return;
+  for (var k in chartInstances) { if (chartInstances[k]) chartInstances[k].destroy(); }
+  chartInstances = {};
+  var fEv = filtEvals();
+  if (fEv.length === 0) return;
+  // Recommendation distribution pie
+  var recCounts = {}; for (var rk2 in RECOMMENDATIONS_AR) recCounts[rk2] = 0;
+  fEv.forEach(function(e){ if (recCounts[e.finalRecommendation] !== undefined) recCounts[e.finalRecommendation]++; });
+  var pieLabels = [], pieData = [], pieColors = [];
+  for (var rk3 in recCounts) { if (recCounts[rk3] > 0) { pieLabels.push(RECOMMENDATIONS_AR[rk3]); pieData.push(recCounts[rk3]); pieColors.push({improvement:'#f43f5e',acceptable:'#f97316',satisfactory:'#f59e0b',good:'#3b82f6',very_good:'#6366f1',excellent:'#10b981'}[rk3]||'#94a3b8'); } }
+  var pieEl = document.getElementById('recChart');
+  if (pieEl && pieData.length > 0) chartInstances.recChart = new Chart(pieEl, { type:'pie', data:{ labels:pieLabels, datasets:[{ data:pieData, backgroundColor:pieColors, borderWidth:0 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom', labels:{ font:{size:10}, boxWidth:12 } } } } });
+  // Dept average bar
+  var deps = filtDepts();
+  var depLabels = [], depData = [], depColors = [];
+  deps.forEach(function(d){ var evs = fEv.filter(function(e){ return e.departmentId === d.id; }); if (evs.length === 0) return; var t2=0,m2=0; evs.forEach(function(e){ Object.values(e.ratings).forEach(function(s){t2+=s;m2+=5;}); }); depLabels.push(d.name.substring(0,12)+'..'); depData.push(m2>0?parseFloat((t2/(m2/5)).toFixed(1)):0); depColors.push('#'+Math.floor(Math.random()*16777215).toString(16)); });
+  var barEl = document.getElementById('deptChart');
+  if (barEl && depData.length > 0) chartInstances.deptChart = new Chart(barEl, { type:'bar', data:{ labels:depLabels, datasets:[{ label:'متوسط الدرجات', data:depData, backgroundColor:depColors, borderRadius:6 }] }, options:{ responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:true, max:5, ticks:{font:{size:10}} }, x:{ ticks:{font:{size:9}} } }, plugins:{ legend:{ display:false } } } });
+}
+// ====================== FEATURE: EXCEL EXPORT ======================
+function exportEvalsExcel() {
+  if (typeof XLSX === 'undefined') { alert('مكتبة Excel غير متوفرة'); return; }
+  var fEv = filtEvals();
+  if (fEv.length === 0) { alert('لا توجد تقييمات للتصدير'); return; }
+  var data = [['المدرب','الوظيفة','القسم','المادة','الفصل','التاريخ','المجموع','التوصية','الملاحظات']];
+  fEv.forEach(function(e){ var t3=0,m3=0; Object.values(e.ratings).forEach(function(s){t3+=s;m3+=5;}); data.push([e.trainerName,e.trainerJobTitle,e.departmentName,e.courseName,e.semester,e.evaluationDate,m3>0?(t3/(m3/5)).toFixed(1):'0',RECOMMENDATIONS_AR[e.finalRecommendation]||e.finalRecommendation,e.notes||'']); });
+  var ws = XLSX.utils.aoa_to_sheet(data);
+  var wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'التقييمات');
+  XLSX.writeFile(wb, 'تقييمات_'+today()+'.xlsx');
+}
+function exportTrainersExcel() {
+  if (typeof XLSX === 'undefined') { alert('مكتبة Excel غير متوفرة'); return; }
+  var data = [['الاسم','المسمى الوظيفي','القسم']];
+  state.trainers.forEach(function(t){ data.push([t.name,t.jobTitle,deptName(t.departmentId)]); });
+  var ws = XLSX.utils.aoa_to_sheet(data);
+  var wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'المدربين');
+  XLSX.writeFile(wb, 'مدربين_'+today()+'.xlsx');
+}
+// ====================== FEATURE: EMAIL NOTIFICATION ======================
+function notifyTrainerEmail(ev) {
+  var subj = encodeURIComponent('تقييم أداء مدرب - '+ev.trainerName);
+  var body = encodeURIComponent(
+    'السلام عليكم\n\n'+
+    'تم إضافة تقييم أداء للمدرب/ة: '+ev.trainerName+'\n'+
+    'القسم: '+ev.departmentName+'\n'+
+    'المادة: '+ev.courseName+'\n'+
+    'تاريخ التقييم: '+ev.evaluationDate+'\n'+
+    'المقيم: '+ev.assessorName+'\n\n'+
+    'يمكنك الاطلاع على التقييم في نظام تقويم الأداء.\n\n'+
+    'شكراً،\n'+state.institutionName
+  );
+  window.open('mailto:?subject='+subj+'&body='+body, '_blank');
+}
+// ====================== FEATURE: STATISTICAL REPORT ======================
+function renderReport() {
+  var fEv = filtEvals(), fTr = filtTr();
+  var tt=0,mt=0; fEv.forEach(function(e){ Object.values(e.ratings).forEach(function(s){tt+=s;mt+=5;}); });
+  var avg = mt>0?(tt/mt*5/5).toFixed(1):'0.0';
+  var recCounts2 = {}; for (var rk4 in RECOMMENDATIONS_AR) recCounts2[rk4]=0;
+  fEv.forEach(function(e){ if (recCounts2[e.finalRecommendation]!==undefined) recCounts2[e.finalRecommendation]++; });
+  var recHtml = ''; for (var rk5 in recCounts2) { if (recCounts2[rk5]>0) recHtml += '<span class="inline-flex px-2.5 py-1 text-[10px] font-bold rounded-lg border ml-1 mb-1 '+REC_COLORS[rk5]+'">'+RECOMMENDATIONS_AR[rk5]+': '+recCounts2[rk5]+'</span> '; }
+  var rows = ''; fEv.slice(0).reverse().forEach(function(e){ var t4=0,m4=0; Object.values(e.ratings).forEach(function(s){t4+=s;m4+=5;}); rows += '<tr class="border-t border-slate-200"><td class="p-2 text-[10px]">'+e.trainerName+'</td><td class="p-2 text-[10px]">'+e.departmentName+'</td><td class="p-2 text-[10px]">'+e.evaluationDate+'</td><td class="p-2 text-[10px] text-center font-bold">'+(m4>0?(t4/(m4/5)).toFixed(1):'-')+'</td></tr>'; });
+  var w2 = window.open('', '_blank');
+  if (!w2) { alert('الرجاء السماح بالنوافذ المنبثقة'); return; }
+  w2.document.write('<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>تقرير إحصائي</title><style>body{font-family:Tahoma,Arial,sans-serif;padding:40px;background:#fff;color:#1e293b;max-width:900px;margin:0 auto}table{width:100%;border-collapse:collapse}th,td{text-align:right;padding:8px 12px;font-size:13px}th{background:#f1f5f9;font-weight:700}.header{text-align:center;border-bottom:3px solid #059669;padding-bottom:20px;margin-bottom:30px}.header h1{font-size:22px;color:#059669;margin:0 0 5px}.header p{font-size:12px;color:#94a3b8;margin:0}.stats{display:flex;gap:15px;justify-content:center;margin-bottom:30px}.stat{text-align:center;padding:15px 25px;background:#f8fafc;border-radius:12px;border:1px solid #e2e8f0}.stat .num{font-size:28px;font-weight:900;color:#0f172a}.stat .lbl{font-size:11px;color:#64748b;margin-top:3px}@media print{body{padding:20px}}</style></head><body><div class="header"><h1>تقرير إحصائي - '+state.institutionName+'</h1><p>تاريخ التقرير: '+today()+'</p></div><div class="stats"><div class="stat"><div class="num">'+fTr.length+'</div><div class="lbl">إجمالي المدربين</div></div><div class="stat"><div class="num">'+fEv.length+'</div><div class="lbl">التقييمات</div></div><div class="stat"><div class="num">'+avg+'</div><div class="lbl">المتوسط العام</div></div></div><h3 style="margin-bottom:8px;font-size:14px;">توزيع التوصيات</h3><div style="margin-bottom:25px;">'+(recHtml||'لا توجد')+'</div><h3 style="margin-bottom:8px;font-size:14px;">جميع التقييمات</h3><table><thead><tr><th>المدرب</th><th>القسم</th><th>التاريخ</th><th>المعدل</th></tr></thead><tbody>'+rows+'</tbody></table><p style="margin-top:30px;font-size:10px;color:#94a3b8;text-align:center;">تم الإنشاء بواسطة نظام تقويم الأداء التدريسي</p></body></html>');
+  w2.document.close();
+}
+// ====================== FEATURE: AUTO-BACKUP ======================
+var backupTimer = null;
+function scheduleBackup() {
+  if (backupTimer) clearTimeout(backupTimer);
+  backupTimer = setTimeout(function(){
+    try {
+      var blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'backup_الكلية_المهنية_بالسيب_'+today()+'.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    } catch(e) {}
+  }, 30000); // 30s debounce
+}
+// Override saveState to include auto-backup
+var _origSaveState = saveState;
+saveState = function() {
+  _origSaveState();
+  var bk = localStorage.getItem('autoBackupEnabled');
+  if (bk !== 'false') scheduleBackup();
+};
 
 // ====================== INIT ======================
 render();
